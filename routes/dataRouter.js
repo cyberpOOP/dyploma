@@ -1,15 +1,15 @@
 const express = require('express');
+const dataController = require('../controllers/dataController')
 
 const router = express.Router();
 
 router.route('/')
-    .get()
-    .post()
+    .post(dataController.createData)
 
 router.route('/:id')
-    .get()
-    .patch()
-    .delete()
+    .get(dataController.getDataById)
+    .patch(dataController.updateData)
+    .delete(dataController.deleteData)
 
 
 module.exports =router;
