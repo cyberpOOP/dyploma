@@ -1,17 +1,42 @@
 const Material = require('../models/materialModel')
+const catchAsync = require('../utils/catchAsync')
 
-exports.getMaterialById = async(req, res) => {
+exports.getMaterialById = catchAsync( async(req, res, next) => {
+    const material = await Material.findById(req.params.id)
 
-}
+    res.status(200).json({
+        data:{
+            material
+        }
+    })
+})
 
-exports.createMaterial = (req, res) => {
+exports.createMaterial = catchAsync( async(req, res, next) => {
+    const material = await Material.create(req.body)
 
-}
+    res.status(200).json({
+        data:{
+            material
+        }
+    })
+})
 
-exports.updateMaterial = async(req, res) => {
+exports.updateMaterial = catchAsync( async(req, res, next) => {
+    const material = await Material.findByIdAndUpdate(req.params.id)
 
-}
+    res.status(200).json({
+        data:{
+            material
+        }
+    })
+})
 
-exports.deleteMaterial = async(req, res)=> {
+exports.deleteMaterial = catchAsync( async(req, res, next)=> {
+    const material = await Material.findByIdAndDelete(req.params.id)
 
-}
+    res.status(200).json({
+        data:{
+            material
+        }
+    })
+})

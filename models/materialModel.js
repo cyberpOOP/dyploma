@@ -7,6 +7,10 @@ const materialSchema = new mongoose.Schema({
         trim: true,
         unique: false
     },
+    author:{
+        type: String,
+        id: String
+    }
     //TODO add data[] field
 })
 

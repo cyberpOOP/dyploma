@@ -1,10 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
+const AppError = require('./utils/appError')
+const errorMiddleware = require('./controllers/errorController')
 
-const courseRouter = require('routes/courseRouter');
-const dataRouter = require('routes/dataRouter');
-const materialRouter = require('routes/materialRouter');
-const userRouter = require('routes/userRouter');
+const courseRouter = require('./routes/courseRouter');
+const dataRouter = require('./routes/dataRouter');
+const materialRouter = require('./routes/materialRouter');
+const userRouter = require('./routes/userRouter');
 
 const app = express();
 
@@ -18,12 +20,10 @@ app.use('/api/data', dataRouter);
 app.use('/api/material', materialRouter);
 app.use('/api/user', userRouter);
 
-app.all('*', (req, res)=>{
-res.status(404).json({
-        status: 'failed',
-        message: `can't find ${req.originalUrl}`
-    });
+app.all('*', (req, res, next)=>{
+    next(new AppError(`Can't find ${req.originalUrl}`, 404));
 });
 
+app.use(errorMiddleware);
 
 module.exports = app;

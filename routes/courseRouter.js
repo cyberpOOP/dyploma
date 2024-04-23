@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.route('/')
     .get(courseController.getAllCourses)
-    .post(courseController.getCourseById)
+    .post(courseController.createCourse)
 
 router.route('/:id')
     .get(courseController.getCourseById)
