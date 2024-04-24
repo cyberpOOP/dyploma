@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const catchAsync = require('../utils/catchAsync')
+const AppError = require("../utils/appError");
 
 exports.signup = catchAsync( async(req, res, next) => {
     const user = await User.create(req.body)
