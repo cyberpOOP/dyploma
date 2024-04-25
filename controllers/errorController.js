@@ -22,6 +22,10 @@ const handleValidationMongo = err =>{
 
 }
 
+const handleJWTError = () => new AppError('Invalid token', 401)
+
+const handleJWTExpired = () => new AppError('JWT expired, login again', 401)
+
 module.exports = ((err, req, res, next)=>{
 
     err.statusCode = err.statusCode || 500;
@@ -44,6 +48,8 @@ module.exports = ((err, req, res, next)=>{
             if (error.kind === 'ObjectId') error = handleIDError(error);
             if(error.code === 11000) error = handleDuplicateFieldsMongo(error);
             if (err.name === "ValidationError") error = handleValidationMongo(error);
+            if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
+            if (error.name === 'TokenExpiredError') error = handleJWTExpired(error);
 
             res.status(error.statusCode).json({
                 status: error.status,
@@ -57,6 +63,8 @@ module.exports = ((err, req, res, next)=>{
         if (error.kind === 'ObjectId') error = handleIDError(error);
         if(error.code === 11000) error = handleDuplicateFieldsMongo(error);
         if (error.name === "ValidationError") error = handleValidationMongo(error);
+        if (error.name === 'JsonWebTokenError') error = handleJWTError();
+        if (error.name === 'TokenExpiredError') error = handleJWTExpired();
 
         res.status(error.statusCode).json({
             status: error.status,

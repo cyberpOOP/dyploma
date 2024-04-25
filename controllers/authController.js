@@ -1,3 +1,4 @@
+const {promisify} = require('util');
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const catchAsync = require('../utils/catchAsync')
@@ -51,4 +52,25 @@ exports.restrict = catchAsync( async(req, res, next)=> {
 
 exports.protect = catchAsync( async(req, res, next) =>{
 
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+        token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) return next(new AppError(`You're not logged`, 401))
+
+    const decoded_token =  await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+
+    const user = await User.findById(decoded_token.id)
+
+    if (!user){
+        return next(new AppError(`Such user doesn't exist`, 401));
+    }
+
+    if (user.changedPassword(decoded_token.iat)){
+        return next(new AppError('Password was changed, log in again', 401))
+    }
+
+    req.user = user;
+    next();
 })

@@ -58,8 +58,6 @@ exports.deleteCourse = catchAsync( async(req, res, next)=> {
 
     const course = await Course.findByIdAndDelete(req.params.id)
 
-    console.log(course)
-
     if(!course){
         return next(new AppError(`Course with ${req.params.id} doesn't exist`, 404))
     }

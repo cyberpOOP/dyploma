@@ -10,9 +10,9 @@ router.post('/signup', authController.signup)
 router.post('/login', authController.login)
 
 router.route('/profile/:id')
-    .get(userController.getUserById)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser)
+    .get(authController.protect, userController.getUserById)
+    .patch(authController.protect, userController.updateUser)
+    .delete(authController.protect, userController.deleteUser)
 
 
 module.exports =router;

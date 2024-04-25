@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
         select: false,
         minlength: [8, 'Password should have at least 8 symbols']
     },
+    passwordDate: Date,
     role:{
         type: String,
         enum: ['user', 'author', 'admin'],
@@ -37,6 +38,15 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.checkPassword = async function(checkPass, userPass){
     return checkPass === userPass
+}
+
+userSchema.methods.changedPassword = function(JWTTimeStamp){
+    if (this.passwordDate){
+        const passTime = parseInt(this.passwordDate.getTime() /1000, 10);
+
+        return JWTTimeStamp < passTime
+    }
+    return false;
 }
 
 const User = new mongoose.model("User", userSchema);
