@@ -46,9 +46,14 @@ exports.login = catchAsync( async(req, res, next) => {
     })
 })
 
-exports.restrict = catchAsync( async(req, res, next)=> {
-
-})
+exports.restrict = (...roles) =>{
+    return (req, res, next) =>{
+        if (!roles.includes(req.user.role)){
+            return next(new AppError(`You don't have permission`, 403))
+        }
+        next()
+    }
+}
 
 exports.protect = catchAsync( async(req, res, next) =>{
 

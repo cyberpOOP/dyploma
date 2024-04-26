@@ -9,8 +9,8 @@ router.route('/')
 
 router.route('/:id')
     .get(authController.protect, dataController.getDataById)
-    .patch(authController.protect, dataController.updateData)
-    .delete(authController.protect, dataController.deleteData)
+    .patch(authController.protect, authController.restrict('admin'), dataController.updateData)
+    .delete(authController.protect, authController.restrict('admin'), dataController.deleteData)
 
 
 module.exports =router;

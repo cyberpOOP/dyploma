@@ -24,7 +24,10 @@ const userSchema = new mongoose.Schema({
         select: false,
         minlength: [8, 'Password should have at least 8 symbols']
     },
-    passwordDate: Date,
+    passwordDate: {
+        type: Date,
+        default: Date.now() - 100
+    },
     role:{
         type: String,
         enum: ['user', 'author', 'admin'],
