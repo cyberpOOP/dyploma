@@ -37,5 +37,9 @@ exports.deleteUser = catchAsync( async(req, res, next)=> {
         return next(new AppError(`User with ${req.params.id} doesn't exist`, 404))
     }
 
-    res.status(200)
+    res.status(200).json({
+        data:{
+
+        }
+    })
 })

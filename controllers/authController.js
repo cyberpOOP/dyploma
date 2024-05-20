@@ -1,11 +1,34 @@
 const {promisify} = require('util');
-const User = require('../models/userModel')
-const jwt = require('jsonwebtoken')
-const catchAsync = require('../utils/catchAsync')
+const crypto = require('crypto');
+const User = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const catchAsync = require('../utils/catchAsync');
 const AppError = require("../utils/appError");
 
 const signToken = id =>{
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: 31 * 3600 * 24});
+}
+
+const sendEmail = async options => {
+    const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth:{
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+        }
+    });
+
+    const emailOptions = {
+        from: 'Dyplom',
+        to: options.email,
+        subject: options.subject,
+        text: options.message
+
+    }
+
+    await transporter.sendMail(emailOptions);
 }
 
 exports.signup = catchAsync( async(req, res, next) => {
@@ -44,6 +67,67 @@ exports.login = catchAsync( async(req, res, next) => {
     res.status(200).json({
         token
     })
+})
+
+exports.forgotPassword =async(req, res, next) => {
+    const user = await User.findOne({email: req.body.email})
+
+    if (!user){
+        return next(new AppError(`Such user doesn't exist`, 404));
+    }
+
+    const resetToken = user.createPasswordResetToken();
+
+    await user.save();
+
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/user/resetPassword/${resetToken}`;
+
+    const message = `Click to reset, bitch: ${resetUrl}`;
+
+    try{
+        await sendEmail({
+            email: user.email,
+            subject: 'Password reset',
+            message
+        });
+
+        res.status(200).json({
+            resetToken
+        });
+    }
+    catch (err){
+        user.passwordResetToken = undefined
+        user.passwordResetExpired = undefined
+
+        user.save()
+
+        return next(new AppError('Email error', 500));
+    }
+
+}
+
+exports.resetPassword = catchAsync( async(req, res, next) => {
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({passwordResetToken: hashedToken, passwordResetExpired:{$gt: Date.now()}});
+
+    if (!user){
+        return next(new AppError('Token is invalid or has expired', 401));
+    }
+
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpired = undefined;
+
+    await user.save();
+
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        token
+    })
+
+
 })
 
 exports.restrict = (...roles) =>{
