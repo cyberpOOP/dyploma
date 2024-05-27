@@ -13,7 +13,18 @@ const courseSchema =new mongoose.Schema({
         unique: false,
         trim: true
     },
-    //TODO add content_id[], authors[], members[] and progression fields
+    members_ids:{
+        type: [String],
+        required: false
+    },
+    content_ids:{
+        type: [String],
+        required: false
+    },
+    authors_ids:{
+      type: [String],
+      required: [true, 'Course should have an author']
+    }
 })
 
 const Course = new mongoose.model("Course", courseSchema);

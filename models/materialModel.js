@@ -7,11 +7,9 @@ const materialSchema = new mongoose.Schema({
         trim: true,
         unique: false
     },
-    author:{
-        type: String,
-        id: String
+    data_ids:{
+        type: [String]
     }
-    //TODO add data[] field
 })
 
 const Material = new mongoose.model("Material", materialSchema);
