@@ -6,12 +6,12 @@ const router = express.Router();
 
 router.route('/')
     .get(authController.protect, courseController.getAllCourses)
-    .post(authController.protect, courseController.createCourse)
+    .post(authController.protect, authController.restrict('author'), courseController.createCourse)
 
 router.route('/:id')
     .get(authController.protect, courseController.getCourseById)
-    .patch(authController.protect, courseController.updateCourse)
-    .delete(authController.protect, courseController.deleteCourse)
+    .patch(authController.protect, authController.restrict('author', 'admin'), courseController.updateCourse)
+    .delete(authController.protect, authController.restrict('author', 'admin'), courseController.deleteCourse)
 
 
 module.exports =router;

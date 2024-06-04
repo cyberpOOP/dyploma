@@ -7,20 +7,8 @@ const dataSchema = new mongoose.Schema({
         required: [true, "Data instance should have a name"],
         unique: [true, "Such data already exists"]
     },
-    urls:{
-        type: [String],
-        required: false,
-        unique: [true, "Such instance already exists"],
-        trim: true
-    },
-    article: {
+    media_url:{
         type: String,
-        required: false,
-        unique: false,
-        trim: true
-    },
-    media:{
-        type: [String],
         required: false,
         unique: false,
         trim: true

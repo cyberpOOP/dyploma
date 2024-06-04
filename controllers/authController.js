@@ -35,16 +35,14 @@ exports.signup = catchAsync( async(req, res, next) => {
     const user = await User.create({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        role: req.body.role
     })
 
     const token = signToken(user._id);
 
     res.status(201).json({
-        token,
-        data:{
-            user
-        }
+        token
     })
 })
 
@@ -69,7 +67,7 @@ exports.login = catchAsync( async(req, res, next) => {
     })
 })
 
-exports.forgotPassword =async(req, res, next) => {
+exports.forgotPassword = catchAsync( async(req, res, next) => {
     const user = await User.findOne({email: req.body.email})
 
     if (!user){
@@ -82,7 +80,7 @@ exports.forgotPassword =async(req, res, next) => {
 
     const resetUrl = `${req.protocol}://${req.get('host')}/api/user/resetPassword/${resetToken}`;
 
-    const message = `Click to reset, bitch: ${resetUrl}`;
+    const message = `Click here to reset your Password: ${resetUrl}`;
 
     try{
         await sendEmail({
@@ -104,7 +102,7 @@ exports.forgotPassword =async(req, res, next) => {
         return next(new AppError('Email error', 500));
     }
 
-}
+});
 
 exports.resetPassword = catchAsync( async(req, res, next) => {
     const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');

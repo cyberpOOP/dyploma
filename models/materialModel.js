@@ -9,6 +9,18 @@ const materialSchema = new mongoose.Schema({
     },
     data_ids:{
         type: [String]
+    },
+    articles: {
+        type: [String],
+        required: false,
+        unique: false,
+        trim: true
+    },
+    external_urls:{
+        type: [String],
+        required: false,
+        unique: false,
+        trim: true
     }
 })
 

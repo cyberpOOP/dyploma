@@ -9,7 +9,7 @@ router.route('/')
 
 router.route('/:id')
     .get(authController.protect, dataController.getDataById)
-    .patch(authController.protect, authController.restrict('admin'), dataController.updateData)
+    .patch(authController.protect, authController.restrict('author', 'admin'), dataController.updateData)
     .delete(authController.protect, authController.restrict('admin'), dataController.deleteData)
 
 
